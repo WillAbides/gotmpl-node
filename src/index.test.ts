@@ -1,37 +1,60 @@
-import {join} from 'path';
-import {Gotmpl} from './index';
-import {expect} from 'chai';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-describe('Gotmpl', () => {
-  it('execServerRequest works', async () => {
-    const gotmpl = new Gotmpl(
-      {
-        path: join(__dirname, '..', '..', 'gotmpl', 'bin', 'gotmpl'),
-        functions: {
-          upper: function (value: string) {
-            return value.toUpperCase();
-          }
-        }
-      }
-    );
-    await gotmpl.startServer();
-    const got = await gotmpl.execServerRequest('Hello {{ upper .name }}!', {name: 'world'});
+import {join} from 'path';
+import {gotmplExec, gotmplServer} from './index';
+import {expect} from 'chai'; // eslint-disable-line node/no-unpublished-import
+
+describe('gotmplExec', () => {
+  it('works', async () => {
+    const got = await gotmplExec('Hello {{ upper .name }}!', {
+      gotmplBin: join(__dirname, '..', '..', 'gotmpl', 'bin', 'gotmpl'),
+      data: {name: 'world'},
+      functions: {
+        upper: function (value: string) {
+          return value.toUpperCase();
+        },
+      },
+    });
     expect(got).equal('Hello WORLD!');
-    await gotmpl.stopServer();
+  });
+});
+
+describe('gotmplServer', () => {
+  it('works', async () => {
+    const server = await gotmplServer({
+      gotmplBin: join(__dirname, '..', '..', 'gotmpl', 'bin', 'gotmpl'),
+      functions: {
+        upper: function (value: string) {
+          return value.toUpperCase();
+        },
+      },
+    });
+    const got = await server.execute('Hello {{ upper .name }}!', {
+      data: {name: 'world'},
+    });
+    expect(got).equal('Hello WORLD!');
+    await server.stop();
   });
 
-  it('execCommandRequest works', async () => {
-    const gotmpl = new Gotmpl(
-      {
-        path: join(__dirname, '..', '..', 'gotmpl', 'bin', 'gotmpl'),
-        functions: {
-          upper: function (value: string) {
-            return value.toUpperCase();
-          }
-        }
-      }
-    );
-    const got = await gotmpl.execCommandRequest('Hello {{ upper .name }}!', {name: 'world'});
+  it('throws after stop', async () => {
+    const server = await gotmplServer({
+      gotmplBin: join(__dirname, '..', '..', 'gotmpl', 'bin', 'gotmpl'),
+      functions: {
+        upper: function (value: string) {
+          return value.toUpperCase();
+        },
+      },
+    });
+    const got = await server.execute('Hello {{ upper .name }}!', {
+      data: {name: 'world'},
+    });
     expect(got).equal('Hello WORLD!');
+    await server.stop();
+    try {
+      await server.execute('Hello {{ upper .name }}!', {data: {name: 'world'}});
+      expect.fail('Expected error');
+    } catch (e: any) {
+      expect(e.message).equal('Channel has been shut down');
+    }
   });
 });
