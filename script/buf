@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+CDPATH="" cd -- "$(dirname -- "$(dirname -- "$0")")"
+
+script/bindown install buf >/dev/null
+
+PATH="$(pwd)/bin:$(pwd)/node_modules/.bin:$PATH"
+
+exec buf "$@"
