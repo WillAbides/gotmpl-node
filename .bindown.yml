@@ -1,7 +1,12 @@
 systems:
 - darwin/amd64
 - darwin/arm64
+- linux/386
 - linux/amd64
+- linux/arm64
+- windows/386
+- windows/amd64
+- windows/arm64
 dependencies:
   buf:
     template: origin#buf
@@ -15,6 +20,10 @@ dependencies:
     template: origin#golangci-lint
     vars:
       version: 1.50.1
+  gotmpl:
+    template: gotmpl
+    vars:
+      version: 0.1.0
   protoc:
     template: origin#protoc
     vars:
@@ -28,6 +37,31 @@ dependencies:
     vars:
       version: 0.8.0
 templates:
+  gotmpl:
+    url: https://github.com/willabides/gotmpl/releases/download/v{{.version}}/gotmpl_{{
+      .version }}_{{.os}}_{{.arch}}.tar.gz
+    archive_path: gotmpl{{.suffix}}
+    bin: gotmpl{{.suffix}}
+    vars:
+      suffix: ""
+    required_vars:
+    - version
+    overrides:
+    - matcher:
+        os:
+        - windows
+      dependency:
+        vars:
+          suffix: .exe
+    systems:
+    - darwin/amd64
+    - darwin/arm64
+    - linux/386
+    - linux/amd64
+    - linux/arm64
+    - windows/386
+    - windows/amd64
+    - windows/arm64
   origin#buf:
     url: https://github.com/bufbuild/buf/releases/download/v{{.version}}/{{.binname}}-{{.os}}-{{.arch}}{{.extension}}
     archive_path: '{{.binname}}-{{.os}}-{{.arch}}{{.extension}}'
@@ -228,15 +262,40 @@ url_checksums:
   https://github.com/bufbuild/buf/releases/download/v1.13.1/buf-Darwin-arm64: 9158f26539f0cefca14a7256ff0723b42a34a0c08a9c6045fb413b8f349655a3
   https://github.com/bufbuild/buf/releases/download/v1.13.1/buf-Darwin-x86_64: b76d857b8b26ce64d2185e7508ba1bc81968e03a96e2a32754454ee297a78df8
   https://github.com/bufbuild/buf/releases/download/v1.13.1/buf-Linux-x86_64: 891961b6f800d1d99dcef0a89b0247002643f961b26940448ada6a6d90795cad
+  https://github.com/bufbuild/buf/releases/download/v1.13.1/buf-Windows-arm64.exe: 147b8ac21873ecf33de164c019d3187a2998566d5f1bdbac5032a4586fbbf758
+  https://github.com/bufbuild/buf/releases/download/v1.13.1/buf-Windows-x86_64.exe: a4594799ad5d30584685877ffce7ef76aebd666b581b6fd86291409023b71384
   https://github.com/golangci/golangci-lint/releases/download/v1.50.1/golangci-lint-1.50.1-darwin-amd64.tar.gz: 0f615fb8c364f6e4a213f2ed2ff7aa1fc2b208addf29511e89c03534067bbf57
   https://github.com/golangci/golangci-lint/releases/download/v1.50.1/golangci-lint-1.50.1-darwin-arm64.tar.gz: 3ca9753d7804b34f9165427fbe339dbea69bd80be8a10e3f02c6037393b2e1c4
+  https://github.com/golangci/golangci-lint/releases/download/v1.50.1/golangci-lint-1.50.1-linux-386.tar.gz: 8965c4327e742444bd4359bd952d42ebc645eba929d3826dd12adb8a14cc6248
   https://github.com/golangci/golangci-lint/releases/download/v1.50.1/golangci-lint-1.50.1-linux-amd64.tar.gz: 4ba1dc9dbdf05b7bdc6f0e04bdfe6f63aa70576f51817be1b2540bbce017b69a
+  https://github.com/golangci/golangci-lint/releases/download/v1.50.1/golangci-lint-1.50.1-linux-arm64.tar.gz: 3ea0a6d5946340f6831646e2c67a317dd9b35bdc4e09b2df953a86f09ba05d74
+  https://github.com/golangci/golangci-lint/releases/download/v1.50.1/golangci-lint-1.50.1-windows-386.zip: 6d11fb6ed91ba3aecbf2ea8e1a95dce16cf0449d54aa77c607ac4e75cc43213a
+  https://github.com/golangci/golangci-lint/releases/download/v1.50.1/golangci-lint-1.50.1-windows-amd64.zip: 8c2da214884db02fb7f3d929672c515ae3b9d10defad4dd661c4ab365a316d68
   https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.darwin.x86_64.tar.xz: e065d4afb2620cc8c1d420a9b3e6243c84ff1a693c1ff0e38f279c8f31e86634
   https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.linux.x86_64.tar.xz: ab6ee1b178f014d1b86d1e24da20d1139656c8b0ed34d2867fbb834dad02bf0a
+  https://github.com/koalaman/shellcheck/releases/download/v0.8.0/shellcheck-v0.8.0.zip: 2a616cbb5b15aec8238f22c0d62dede1b6d155798adc45ff4d0206395a8a5833
   https://github.com/mvdan/gofumpt/releases/download/v0.4.0/gofumpt_v0.4.0_darwin_amd64: 3f550baa6d4c071b01e9c68b9308bd2ca3bae6b3b09d203f19ed8626ee0fe487
   https://github.com/mvdan/gofumpt/releases/download/v0.4.0/gofumpt_v0.4.0_darwin_arm64: 768263452749a3a3cabf412f29f8a14e8bbdc7f6c6471427e977eebc6592ddb8
+  https://github.com/mvdan/gofumpt/releases/download/v0.4.0/gofumpt_v0.4.0_linux_386: aa6c7cbaeba26ed72d2b7bae9e73bc52d52235bd4571460d2eea373d8ef3dbdd
   https://github.com/mvdan/gofumpt/releases/download/v0.4.0/gofumpt_v0.4.0_linux_amd64: d3ca535e6b0b230a9c4f05a3ec54e358336b5e7474d239c15514e63a0b2a8041
+  https://github.com/mvdan/gofumpt/releases/download/v0.4.0/gofumpt_v0.4.0_linux_arm64: 186faa7b7562cc4c1a34f2cb89f9b09d9fad949bc2f3ce293ea2726b23c28695
+  https://github.com/mvdan/gofumpt/releases/download/v0.4.0/gofumpt_v0.4.0_windows_386.exe: 4bd5f8c184987e88adc8b52393e75269b86178516aa6fe0af4da9092c2b1df08
+  https://github.com/mvdan/gofumpt/releases/download/v0.4.0/gofumpt_v0.4.0_windows_amd64.exe: 1f4c74ac30ef41ea9859c445c84baff7b283b3c16b467fef1d728a93d90d3e92
   https://github.com/protocolbuffers/protobuf-go/releases/download/v1.28.1/protoc-gen-go.v1.28.1.darwin.amd64.tar.gz: 6bc912fcc453741477568ae758c601ef74696e1e37027911f202479666f441f2
+  https://github.com/protocolbuffers/protobuf-go/releases/download/v1.28.1/protoc-gen-go.v1.28.1.linux.386.tar.gz: bb78e163d3450f1dafd644eaf61f53d7516f016c4c44122421d697718344974c
   https://github.com/protocolbuffers/protobuf-go/releases/download/v1.28.1/protoc-gen-go.v1.28.1.linux.amd64.tar.gz: 5c5802081fb9998c26cdfe607017a677c3ceaa19aae7895dbb1eef9518ebcb7f
+  https://github.com/protocolbuffers/protobuf-go/releases/download/v1.28.1/protoc-gen-go.v1.28.1.windows.386.zip: d34b247281c35029a95e0c04d3af02165c5ee3c49cd2d13038ed806c09574cb9
+  https://github.com/protocolbuffers/protobuf-go/releases/download/v1.28.1/protoc-gen-go.v1.28.1.windows.amd64.zip: ca6a48a6b84435f19e3ff335ff7f2b0df2c47505771ad40bddadc34d61c5ffe0
+  https://github.com/protocolbuffers/protobuf/releases/download/v21.12/protoc-21.12-linux-x86_32.zip: dd4b5972cb3de92bfff9d7d3b361a7c281d27a010c8872d1e6efc43895253f71
   https://github.com/protocolbuffers/protobuf/releases/download/v21.12/protoc-21.12-linux-x86_64.zip: 3a4c1e5f2516c639d3079b1586e703fc7bcfa2136d58bda24d1d54f949c315e8
   https://github.com/protocolbuffers/protobuf/releases/download/v21.12/protoc-21.12-osx-x86_64.zip: 9448ff40278504a7ae5139bb70c962acc78c32d8fc54b4890a55c14c68b9d10a
+  https://github.com/protocolbuffers/protobuf/releases/download/v21.12/protoc-21.12-win32.zip: 6de4ef4e65c7edb834a2a9fca6d85388adc5dd71fc8bff8b60569717d01dabea
+  https://github.com/protocolbuffers/protobuf/releases/download/v21.12/protoc-21.12-win64.zip: 71852a30cf62975358edfcbbff93086e8857a079c8e4d6904881aa968d65c7f9
+  https://github.com/willabides/gotmpl/releases/download/v0.1.0/gotmpl_0.1.0_darwin_amd64.tar.gz: 1b177224c56d9d6afc44c30cc598f79305ebb1281782d91421b2179ee68bd055
+  https://github.com/willabides/gotmpl/releases/download/v0.1.0/gotmpl_0.1.0_darwin_arm64.tar.gz: 60a6f1e9d91a629a8fc4d086642e440f9499425fe352713b2a5a287269a2a853
+  https://github.com/willabides/gotmpl/releases/download/v0.1.0/gotmpl_0.1.0_linux_386.tar.gz: 7dc45112b71bffb830de5ce0a9c3523c6437d4863b01fda32cef6aac07ac02e6
+  https://github.com/willabides/gotmpl/releases/download/v0.1.0/gotmpl_0.1.0_linux_amd64.tar.gz: edc8e7df105a4fecadd5c733deb32b16ba8b585780eb9249c37bc2491808279f
+  https://github.com/willabides/gotmpl/releases/download/v0.1.0/gotmpl_0.1.0_linux_arm64.tar.gz: 781115111aae19a1f5616f5ce2e3ca6b159f8c7dcbd6818274f78dca7a994ead
+  https://github.com/willabides/gotmpl/releases/download/v0.1.0/gotmpl_0.1.0_windows_386.tar.gz: e8c354f1a3e5d297c903a3fe755fa384793bd2efe7f11c112cadb099cf275c51
+  https://github.com/willabides/gotmpl/releases/download/v0.1.0/gotmpl_0.1.0_windows_amd64.tar.gz: 142f103f451c251054443dbf4ce9c80caf40fab65c10be363cffc686940ee12e
+  https://github.com/willabides/gotmpl/releases/download/v0.1.0/gotmpl_0.1.0_windows_arm64.tar.gz: 964f3e17aee54704f2f996cd227dbad6adf2405c02751cbec72a502c553c23f0
