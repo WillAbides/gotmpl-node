@@ -52,5 +52,6 @@
     "@protobuf-ts/runtime-rpc": "^2.8.2",
     "nice-grpc": "^2.1.0",
     "protobufjs": "^7.2.2"
-  }
+  },
+  "version": "0.0.1-alpha.0"
 }
