@@ -3,14 +3,15 @@ import {createChannel, createClient, createServer} from 'nice-grpc';
 import {
   ExecuteRequest,
   GotmplServiceDefinition,
-} from '../gen/proto/ts/gotmpl/v1/gotmpl';
+} from './gen/proto/ts/gotmpl/v1/gotmpl';
 import {
   ExecuteFunctionRequest,
   ExecuteFunctionResponse,
   ListFunctionsResponse,
   PluginServiceDefinition,
   PluginServiceImplementation,
-} from '../gen/proto/ts/plugin/v1/plugin';
+} from './gen/proto/ts/plugin/v1/plugin';
+import {join} from 'path';
 
 // Options for executing a template.
 interface GotmplExecOptions {
@@ -54,7 +55,7 @@ export async function gotmplExec(
   const pluginServer = await handleCommonOptions(options, args);
   let result = '';
   try {
-    const bin = options.gotmplBin || 'gotmpl';
+    const bin = options.gotmplBin || join(__dirname, '..', 'bin', 'gotmpl');
     const cmd = spawn(bin, args);
     cmd.stdout.on('data', data => {
       result += data.toString();
@@ -90,7 +91,8 @@ export async function gotmplServer(
 ): Promise<GotmplServer> {
   const args = ['server', '--address', 'localhost:0'];
   const pluginServer = await handleCommonOptions(options, args);
-  const process = spawn(options.gotmplBin || 'gotmpl', args);
+  const bin = options.gotmplBin || join(__dirname, '..', 'bin', 'gotmpl');
+  const process = spawn(bin, args);
   return new Promise(resolve => {
     process.stdout.on('data', data => {
       const line = data.toString();
