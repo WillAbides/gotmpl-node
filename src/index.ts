@@ -9,6 +9,7 @@ import {
   ExecuteFunctionResponse,
   ListFunctionsResponse,
   PluginServiceDefinition,
+  PluginServiceImplementation,
 } from '../gen/proto/ts/plugin/v1/plugin';
 
 // Options for executing a template.
@@ -80,24 +81,7 @@ interface GotmplServer {
   stop(): Promise<void>;
 }
 
-async function handleCommonOptions(
-  options: GotmplOptions,
-  args: string[]
-): Promise<ReturnType<typeof createServer> | undefined> {
-  for (const plugin of options.plugins || []) {
-    args.push('--plugin', plugin);
-  }
-  let pluginServer: ReturnType<typeof createServer> | undefined;
-  if (options.functions && Object.keys(options.functions).length > 0) {
-    pluginServer = createServer();
-    pluginServer.add(PluginServiceDefinition, new Plugin(options.functions));
-    const pluginServerPort = await pluginServer.listen('localhost:0');
-    args.push('--grpc-plugin', `localhost:${pluginServerPort}`);
-  }
-  return pluginServer;
-}
-
-// Runs `gotmpl server` and returns a client for executing templates. This is useful when you have a lot of templates
+// Runs `gotmpl server` and returns a method for executing templates. This is useful when you have a lot of templates
 // or need to execute them concurrently. If you only have a few templates to execute, you should use gotmplExec instead.
 // The returned server must be stopped with the stop method when you are done with it. After stopping, calls to
 // execute will fail.
@@ -146,29 +130,50 @@ export async function gotmplServer(
   });
 }
 
-class Plugin {
-  constructor(private readonly functions: {[name: string]: Function}) {}
-
-  async listFunctions(): Promise<ListFunctionsResponse> {
-    return Promise.resolve({
-      functions: Object.keys(this.functions).sort(),
-    });
+async function handleCommonOptions(
+  options: GotmplOptions,
+  args: string[]
+): Promise<ReturnType<typeof createServer> | undefined> {
+  for (const plugin of options.plugins || []) {
+    args.push('--plugin', plugin);
   }
+  let pluginServer: ReturnType<typeof createServer> | undefined;
+  if (options.functions && Object.keys(options.functions).length > 0) {
+    pluginServer = createServer();
+    pluginServer.add(
+      PluginServiceDefinition,
+      newPluginService(options.functions)
+    );
+    const pluginServerPort = await pluginServer.listen('localhost:0');
+    args.push('--grpc-plugin', `localhost:${pluginServerPort}`);
+  }
+  return pluginServer;
+}
 
-  async executeFunction(
-    req: ExecuteFunctionRequest
-  ): Promise<ExecuteFunctionResponse> {
-    const func = this.functions[req.function];
-    if (!func) {
-      throw new Error(`Function ${req.function} not found`);
-    }
-    return new Promise(resolve => {
-      const result = func(...req.args);
-      if (result instanceof Promise) {
-        result.then(value => resolve({result: value}));
-      } else {
-        resolve({result});
+function newPluginService(functions: {
+  [name: string]: Function;
+}): PluginServiceImplementation {
+  return {
+    listFunctions: async (): Promise<ListFunctionsResponse> => {
+      return Promise.resolve({
+        functions: Object.keys(functions).sort(),
+      });
+    },
+    executeFunction: async (
+      req: ExecuteFunctionRequest
+    ): Promise<ExecuteFunctionResponse> => {
+      const func = functions[req.function];
+      if (!func) {
+        throw new Error(`Function ${req.function} not found`);
       }
-    });
-  }
+      return new Promise(resolve => {
+        const result = func(...req.args);
+        if (result instanceof Promise) {
+          result.then(value => resolve({result: value}));
+        } else {
+          resolve({result});
+        }
+      });
+    },
+  };
 }

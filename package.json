@@ -14,6 +14,7 @@
     "typescript": "~4.7.0"
   },
   "scripts": {
+    "test": "mocha --require ts-node/register src/*.test.ts",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
