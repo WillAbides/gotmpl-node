@@ -2,7 +2,7 @@
   "name": "gotmpl",
   "version": "0.0.1-alpha.1",
   "description": "A wrapper for https://github.com/willabides/gotmpl",
-  "repository": "github.com/willabides/gotmpl-node",
+  "repository": "https://github.com/willabides/gotmpl-node",
   "license": "MIT",
   "main": "build/src/index.js",
   "engines": {
