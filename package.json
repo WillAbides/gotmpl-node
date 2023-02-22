@@ -1,6 +1,5 @@
 {
   "name": "gotmpl",
-  "version": "0.1.0",
   "description": "A wrapper for https://github.com/willabides/gotmpl",
   "repository": "github.com/willabides/gotmpl-node",
   "license": "MIT",
@@ -18,7 +17,7 @@
     "arm64",
     "ia32"
   ],
-  "files":[
+  "files": [
     "build/**/*",
     "script/*",
     ".bindown.yml"
