@@ -53,12 +53,16 @@ export async function gotmplExec(
     options.package || 'text',
   ];
   const pluginServer = await handleCommonOptions(options, args);
-  let result = '';
+  const result: string[] = [];
   try {
+    const stderr: string[] = [];
     const bin = options.gotmplBin || join(__dirname, '..', 'bin', 'gotmpl');
     const cmd = spawn(bin, args);
     cmd.stdout.on('data', data => {
-      result += data.toString();
+      result.push(data.toString());
+    });
+    cmd.stderr.on('data', data => {
+      stderr.push(data.toString());
     });
     const code = await new Promise(resolve => {
       cmd.on('close', code => {
@@ -66,14 +70,14 @@ export async function gotmplExec(
       });
     });
     if (code !== 0) {
-      throw new Error(`Gotmpl exited with status ${code}`);
+      throw new Error(`Gotmpl exited with status ${code}\n${stderr.join('')}`);
     }
   } finally {
     if (pluginServer) {
       await pluginServer.shutdown();
     }
   }
-  return result;
+  return result.join('');
 }
 
 interface GotmplServer {

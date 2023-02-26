@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {gotmplExec, gotmplServer} from './index';
-import {expect} from 'chai'; // eslint-disable-line node/no-unpublished-import
+import {expect} from 'chai';
 
 describe('gotmplExec', () => {
   it('works', async () => {
